@@ -9,20 +9,20 @@ import UIKit
 import MapKit
 import CoreLocation
 
-
 class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     // MARK: - Map
     private let mapView: MKMapView = {
         let map = MKMapView()
         map.showsCompass = false
+        map.mapType = .hybrid
         return map
     }()
     
     // MARK: - Loading Indicator
     private let loadingView: UIView = {
         let view = UIView()
-        view.backgroundColor = .orange
+        view.backgroundColor = .darkGray
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 10
         view.isHidden = true
@@ -40,7 +40,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     private let searchingText: UILabel = {
         let label = UILabel()
         label.text = "Searching..."
-        label.textColor = .lightText
+        label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
         label.textAlignment = .center
         return label
@@ -49,7 +49,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     // MARK: - Top View
     private let topView: UIView = {
         let view = UIView()
-        view.backgroundColor = .clear
+        view.backgroundColor = .darkGray
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -106,10 +106,6 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         return view
     }()
     
-    private let tableView: UITableView = {
-        let table = UITableView()
-        return table
-    }()
     // MARK: - Right Side View
     private let rightView: UIView = {
         let view = UIView()
@@ -166,18 +162,51 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         return button
     }()
     
+    // MARK: - Left Side View
+    private let leftView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .darkGray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+    
+    private lazy var googleMapsButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "googleMaps"), for: .normal)
+        button.setTitle(nil, for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.contentVerticalAlignment = .fill
+        button.contentHorizontalAlignment = .fill
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(openGoogleMaps), for: .touchUpInside)
+        return button
+    }()
+    
     var tapRecognizer = UITapGestureRecognizer()
     var vm = MapVM()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillAppear),
+                                               name: UIApplication.keyboardWillShowNotification,
+                                               object: nil)
         setUIElements()
         addGesutures()
         setupLocationManager()
         vm.mapManager.checkLocationServices(map: self.mapView)
+        vm.coreDataManager.fetchLocations()
     }
     
+    // MARK: - Detect When Keyboard is Shown
+    @objc func keyboardWillAppear() {
+        vm.keyboardIsShown = true
+    }
+}
+
+// MARK: - Map Selection Functions
+extension MapVC {
     // MARK: - Add Gesture Recognizer to Map
     private func addGesutures() {
         tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(userPlacedPinOnMap))
@@ -185,9 +214,56 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         mapView.addGestureRecognizer(tapRecognizer)
     }
     
-    // MARK: - Detect When Keyboard is Shown
-    @objc func keyboardWillAppear() {
-        vm.keyboardIsShown = true
+    // MARK: - User Placed Pin on Map
+    @objc func userPlacedPinOnMap(_ gesture: UITapGestureRecognizer) {
+        vm.userPlacedPin(tap: self.tapRecognizer, map: self.mapView) {
+            self.rightView.isHidden = false
+            self.leftView.isHidden = false
+            self.view.endEditing(true)
+        }
+    }
+}
+
+// MARK: - Top View Buttons Action
+extension MapVC {
+    // MARK: - Change Transport Type
+    @objc func changeTransportTypePressed() {
+        if vm.mapManager.selectedTransportType == .walking {
+            vm.mapManager.selectedTransportType = .automobile
+            transportTypeButton.setImage(UIImage(systemName: "car.fill"), for: .normal)
+        } else if vm.mapManager.selectedTransportType == .automobile {
+            vm.mapManager.selectedTransportType = .walking
+            transportTypeButton.setImage(UIImage(systemName: "figure.walk"), for: .normal)
+        }
+    }
+    
+    // MARK: - Show Saved Locations List
+    @objc func showSavedLocationsList() {
+        if vm.coreDataManager.savedLocations.isEmpty {
+            AlertView.shared.addAlert(vc: self, title: "No Saved Locations", body: "")
+        } else {
+            let vc = SelectLocationVC()
+            vc.delegate = self
+            self.present(vc, animated: true)
+        }
+    }
+}
+
+// MARK: - Right & Left View Buttons Action
+extension MapVC {
+    // MARK: - Remove Location Pressed
+    @objc func removeLocationPressed() {
+        vm.removeLocation(map: self.mapView) {
+            self.rightView.isHidden = true
+            self.leftView.isHidden = true
+            self.topView.isHidden = false
+            
+            if vm.directionsMode == true {
+                self.showDirectionsButton.setImage(UIImage(systemName: "arrow.triangle.branch"), for: .normal)
+                self.showDirectionsButton.tintColor = .systemOrange
+                self.vm.directionsMode = false
+            }
+        }
     }
     
     // MARK: - Save Location
@@ -197,45 +273,38 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     // MARK: - Show Directions for Selected Location
     @objc func showDirectionsPressed() {
-        vm.showDirections(map: self.mapView) {
-            self.topView.isHidden = true
+        if vm.directionsMode == false {
+            vm.showDirections(map: self.mapView) {
+                self.topView.isHidden = true
+                self.vm.directionsMode = true
+                self.showDirectionsButton.setImage(UIImage(systemName: "location.north.circle.fill"), for: .normal)
+                self.showDirectionsButton.tintColor = .systemBlue
+            }
+        } else {
+            //TODO: OPEN AND USE NAVIGATION COMPAS ARROW
+            print("NAVIGATE")
         }
     }
     
-    // MARK: - User Placed Pin on Map
-    @objc func userPlacedPinOnMap(_ gesture: UITapGestureRecognizer) {
-        vm.userPlacedPin(tap: self.tapRecognizer, map: self.mapView) {
-            self.rightView.isHidden = false
-            self.view.endEditing(true)
-        }
-    }
-    
-    // MARK: - Show Saved Locations List
-    @objc func showSavedLocationsList() {
-        self.present(SelectLocationVC(), animated: true)
-    }
-    
-    // MARK: - Remove Location Pressed
-    @objc func removeLocationPressed() {
-        vm.removeLocation(map: self.mapView) {
-            self.rightView.isHidden = true
-            self.topView.isHidden = false
-        }
-    }
-    
-    // MARK: - Change Transport Type
-    @objc func changeTransportTypePressed() {
-        if vm.selectedTransportType == .walking {
-            vm.selectedTransportType = .automobile
-            transportTypeButton.setImage(UIImage(systemName: "car.fill"), for: .normal)
-        } else if vm.selectedTransportType == .automobile {
-            vm.selectedTransportType = .walking
-            transportTypeButton.setImage(UIImage(systemName: "figure.walk"), for: .normal)
+    // MARK: - Open Google Maps
+    @objc private func openGoogleMaps() {
+        if let location = vm.mapManager.selectedLocation {
+            vm.mapManager.openGoogleMaps(location: location)
         }
     }
 }
 
-// MARK: - TextField
+// MARK: - Go To Saved Location Delegate
+extension MapVC: GoToSavedLocationDelegate {
+    func didSelectSavedLocation(location: LocationEntity) {
+        vm.saveLocationSelected(map: self.mapView, location: location) {
+            self.rightView.isHidden = false
+            self.leftView.isHidden = false
+        }
+    }
+}
+
+// MARK: - Search TextField
 extension MapVC: UITextFieldDelegate, MKLocalSearchCompleterDelegate {
     // MARK: - Search for Location
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -260,6 +329,7 @@ extension MapVC: UITextFieldDelegate, MKLocalSearchCompleterDelegate {
                 self.view.isUserInteractionEnabled = true
                 self.view.endEditing(true)
                 self.rightView.isHidden = false
+                self.leftView.isHidden = false
                 self.searchLocationTF.text?.removeAll()
             }
         } onError: { title, body in
@@ -300,7 +370,7 @@ extension MapVC: CLLocationManagerDelegate, MKMapViewDelegate {
     // MARK: - Render Direction Polyline
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         let renderer = MKPolylineRenderer(overlay: overlay as! MKPolyline)
-        renderer.strokeColor = UIColor.blue
+        renderer.strokeColor = UIColor.systemBlue
         return renderer
     }
 }
@@ -326,41 +396,44 @@ extension MapVC {
         buttonsStack.addArrangedSubview(removeLocationButton)
         buttonsStack.addArrangedSubview(saveLocationButton)
         buttonsStack.addArrangedSubview(showDirectionsButton)
+        // Left View
+        mapView.addSubview(leftView)
+        leftView.addSubview(googleMapsButton)
         
         setTopView()
         setActivityIndicator()
         setRightView()
+        setLeftView()
     }
     
     // MARK: - Set Top View
-    func setTopView() {
+    private func setTopView() {
         topView.topAnchor.constraint(equalTo: mapView.topAnchor, constant: 60).isActive = true
-        topView.leftAnchor.constraint(equalTo: mapView.leftAnchor, constant: 20).isActive = true
-        topView.rightAnchor.constraint(equalTo: mapView.rightAnchor, constant: -20).isActive = true
+        topView.leftAnchor.constraint(equalTo: mapView.leftAnchor, constant: 12).isActive = true
+        topView.rightAnchor.constraint(equalTo: mapView.rightAnchor, constant: -12).isActive = true
         topView.heightAnchor.constraint(equalToConstant: 60).isActive = true
         topView.layer.cornerRadius = 10
 
-        transportTypeButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        transportTypeButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        transportTypeButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
+        transportTypeButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         transportTypeButton.centerYAnchor.constraint(equalTo: topView.centerYAnchor).isActive = true
-        transportTypeButton.leftAnchor.constraint(equalTo: topView.leftAnchor, constant: 4).isActive = true
+        transportTypeButton.leftAnchor.constraint(equalTo: topView.leftAnchor, constant: 12).isActive = true
         
         searchLocationTF.centerXAnchor.constraint(equalTo: topView.centerXAnchor).isActive = true
         searchLocationTF.centerYAnchor.constraint(equalTo: topView.centerYAnchor).isActive = true
-        searchLocationTF.leftAnchor.constraint(equalTo: transportTypeButton.rightAnchor, constant: 20).isActive = true
-        searchLocationTF.rightAnchor.constraint(equalTo: showSavedLocationsButton.leftAnchor, constant: -20).isActive = true
-        searchLocationTF.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        searchLocationTF.leftAnchor.constraint(equalTo: transportTypeButton.rightAnchor, constant: 12).isActive = true
+        searchLocationTF.rightAnchor.constraint(equalTo: showSavedLocationsButton.leftAnchor, constant: -12).isActive = true
+        searchLocationTF.heightAnchor.constraint(equalToConstant: 35).isActive = true
         searchLocationTF.delegate = self
         
-        showSavedLocationsButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
-        showSavedLocationsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        showSavedLocationsButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
+        showSavedLocationsButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         showSavedLocationsButton.centerYAnchor.constraint(equalTo: topView.centerYAnchor).isActive = true
-        showSavedLocationsButton.rightAnchor.constraint(equalTo: topView.rightAnchor, constant: -4).isActive = true
-        
+        showSavedLocationsButton.rightAnchor.constraint(equalTo: topView.rightAnchor, constant: -12).isActive = true
     }
     
     // MARK: - Activity Indicator
-    func setActivityIndicator() {
+    private func setActivityIndicator() {
         loadingView.topAnchor.constraint(equalTo: topView.bottomAnchor, constant: 20).isActive = true
         loadingView.centerXAnchor.constraint(equalTo: topView.centerXAnchor).isActive = true
         loadingView.heightAnchor.constraint(equalToConstant: 70).isActive = true
@@ -376,7 +449,7 @@ extension MapVC {
     }
     
     // MARK: - Right Side View
-    func setRightView() {
+    private func setRightView() {
         rightView.rightAnchor.constraint(equalTo: mapView.rightAnchor, constant: -20).isActive = true
         rightView.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -40).isActive = true
         rightView.heightAnchor.constraint(equalToConstant: 220).isActive = true
@@ -395,5 +468,18 @@ extension MapVC {
         showDirectionsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         showDirectionsButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         
+    }
+    
+    private func setLeftView() {
+        leftView.leftAnchor.constraint(equalTo: mapView.leftAnchor, constant: 20).isActive = true
+        leftView.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -40).isActive = true
+        leftView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        leftView.widthAnchor.constraint(equalToConstant: 60).isActive = true
+        leftView.layer.cornerRadius = 10
+        
+        googleMapsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        googleMapsButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        googleMapsButton.centerXAnchor.constraint(equalTo: leftView.centerXAnchor).isActive = true
+        googleMapsButton.centerYAnchor.constraint(equalTo: leftView.centerYAnchor).isActive = true
     }
 }

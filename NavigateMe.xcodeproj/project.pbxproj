@@ -10,10 +10,12 @@
 		812F439729854E7900E27F80 /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439629854E7900E27F80 /* UITextField.swift */; };
 		812F439B2985698F00E27F80 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439A2985698F00E27F80 /* AlertView.swift */; };
 		812F439F298571D800E27F80 /* SelectLocationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439E298571D800E27F80 /* SelectLocationVC.swift */; };
+		812F43A42985745400E27F80 /* LocationsContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A22985745400E27F80 /* LocationsContainer.xcdatamodeld */; };
+		812F43A6298574AC00E27F80 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A5298574AC00E27F80 /* CoreDataManager.swift */; };
+		812F43AA298582D600E27F80 /* SavedLocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A9298582D600E27F80 /* SavedLocationCell.swift */; };
 		817CC04829845B4F00D50EDE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04729845B4F00D50EDE /* AppDelegate.swift */; };
 		817CC04A29845B4F00D50EDE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04929845B4F00D50EDE /* SceneDelegate.swift */; };
 		817CC04C29845B4F00D50EDE /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04B29845B4F00D50EDE /* MapVC.swift */; };
-		817CC04F29845B4F00D50EDE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 817CC04D29845B4F00D50EDE /* Main.storyboard */; };
 		817CC05129845B5100D50EDE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 817CC05029845B5100D50EDE /* Assets.xcassets */; };
 		817CC05429845B5100D50EDE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 817CC05229845B5100D50EDE /* LaunchScreen.storyboard */; };
 		817CC05C29846E1500D50EDE /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC05B29846E1500D50EDE /* Location.swift */; };
@@ -25,11 +27,13 @@
 		812F439629854E7900E27F80 /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
 		812F439A2985698F00E27F80 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
 		812F439E298571D800E27F80 /* SelectLocationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectLocationVC.swift; sourceTree = "<group>"; };
+		812F43A32985745400E27F80 /* LocationsContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LocationsContainer.xcdatamodel; sourceTree = "<group>"; };
+		812F43A5298574AC00E27F80 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		812F43A9298582D600E27F80 /* SavedLocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocationCell.swift; sourceTree = "<group>"; };
 		817CC04429845B4F00D50EDE /* NavigateMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavigateMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		817CC04729845B4F00D50EDE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		817CC04929845B4F00D50EDE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		817CC04B29845B4F00D50EDE /* MapVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVC.swift; sourceTree = "<group>"; wrapsLines = 0; };
-		817CC04E29845B4F00D50EDE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		817CC05029845B5100D50EDE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		817CC05329845B5100D50EDE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		817CC05529845B5100D50EDE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -53,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				812F439A2985698F00E27F80 /* AlertView.swift */,
+				812F43A9298582D600E27F80 /* SavedLocationCell.swift */,
 			);
 			path = Component;
 			sourceTree = "<group>";
@@ -91,7 +96,6 @@
 				817CC062298474DC00D50EDE /* Services */,
 				817CC05E298474A000D50EDE /* View */,
 				817CC05F298474AC00D50EDE /* ViewModel */,
-				817CC04D29845B4F00D50EDE /* Main.storyboard */,
 				817CC05029845B5100D50EDE /* Assets.xcassets */,
 				817CC05229845B5100D50EDE /* LaunchScreen.storyboard */,
 				817CC05529845B5100D50EDE /* Info.plist */,
@@ -102,6 +106,7 @@
 		817CC05D2984749500D50EDE /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				812F43A22985745400E27F80 /* LocationsContainer.xcdatamodeld */,
 				817CC05B29846E1500D50EDE /* Location.swift */,
 			);
 			path = Model;
@@ -129,6 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				817CC0632984751D00D50EDE /* MapManager.swift */,
+				812F43A5298574AC00E27F80 /* CoreDataManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -193,7 +199,6 @@
 			files = (
 				817CC05429845B5100D50EDE /* LaunchScreen.storyboard in Resources */,
 				817CC05129845B5100D50EDE /* Assets.xcassets in Resources */,
-				817CC04F29845B4F00D50EDE /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,23 +215,18 @@
 				817CC0642984751D00D50EDE /* MapManager.swift in Sources */,
 				812F439F298571D800E27F80 /* SelectLocationVC.swift in Sources */,
 				817CC04829845B4F00D50EDE /* AppDelegate.swift in Sources */,
+				812F43AA298582D600E27F80 /* SavedLocationCell.swift in Sources */,
 				812F439B2985698F00E27F80 /* AlertView.swift in Sources */,
 				817CC04A29845B4F00D50EDE /* SceneDelegate.swift in Sources */,
+				812F43A42985745400E27F80 /* LocationsContainer.xcdatamodeld in Sources */,
 				817CC05C29846E1500D50EDE /* Location.swift in Sources */,
+				812F43A6298574AC00E27F80 /* CoreDataManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		817CC04D29845B4F00D50EDE /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				817CC04E29845B4F00D50EDE /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		817CC05229845B5100D50EDE /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -364,7 +364,7 @@
 				INFOPLIST_FILE = NavigateMe/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -392,7 +392,7 @@
 				INFOPLIST_FILE = NavigateMe/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -430,6 +430,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		812F43A22985745400E27F80 /* LocationsContainer.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				812F43A32985745400E27F80 /* LocationsContainer.xcdatamodel */,
+			);
+			currentVersion = 812F43A32985745400E27F80 /* LocationsContainer.xcdatamodel */;
+			path = LocationsContainer.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 817CC03C29845B4F00D50EDE /* Project object */;
 }

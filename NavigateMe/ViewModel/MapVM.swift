@@ -13,21 +13,25 @@ import CoreLocation
 class MapVM: NSObject {
     
     let mapManager = MapManager.shared
-    var selectedTransportType: MKDirectionsTransportType = .walking
+    
+    let coreDataManager = CoreDataManager.shared
     
     var keyboardIsShown: Bool = false
+    var directionsMode: Bool = false
     
     // MARK: - Drop Pin on User Tap
     func userPlacedPin(tap: UITapGestureRecognizer, map: MKMapView, completion: () -> Void) {
-        // Position on the screen, CGPoint
-        let screenPoint = tap.location(in: map)
-        // Position on the map, CLLocationCoordinate2D
-        let coordinate = map.convert(screenPoint, toCoordinateFrom: map)
-        
-        map.removeAnnotations(mapManager.annotations)
-        mapManager.dropPin(map: map, coordinate: coordinate)
-        
-        completion()
+        if directionsMode == false {
+            // Position on the screen, CGPoint
+            let screenPoint = tap.location(in: map)
+            // Position on the map, CLLocationCoordinate2D
+            let coordinate = map.convert(screenPoint, toCoordinateFrom: map)
+            
+            map.removeAnnotations(mapManager.annotations)
+            mapManager.dropPin(map: map, coordinate: coordinate)
+            
+            completion()
+        }
     }
     
     // MARK: - Drop Pin on User Search
@@ -59,6 +63,7 @@ class MapVM: NSObject {
             }
             
             map.removeAnnotations(self.mapManager.annotations)
+            
             for item in response.mapItems {
                 self.mapManager.dropPin(map: map, coordinate: item.placemark.coordinate)
             }
@@ -67,9 +72,21 @@ class MapVM: NSObject {
         }
     }
     
+    // MARK: - Drop Pin on Save Location Selected
+    func saveLocationSelected(map: MKMapView, location: LocationEntity, completion: () -> Void) {
+        map.removeAnnotations(mapManager.annotations)
+        let coordinates = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+        mapManager.dropPin(map: map, coordinate: coordinates)
+        completion()
+    }
+    
     // MARK: - Save Location
     func saveLocation() {
-        print("SAVE")
+        guard let selectedLocation = mapManager.selectedLocation else {
+            print("Select Location")
+            return
+        }
+        coreDataManager.saveLocation(location: selectedLocation)
     }
     
     // MARK: - Show Directions
@@ -84,8 +101,7 @@ class MapVM: NSObject {
             return
         }
         
-        let request = mapManager.createDirectionsRequest(transportType: self.selectedTransportType,
-                                                         startCoordinate: mapManager.getCoordinates(location: userLocation),
+        let request = mapManager.createDirectionsRequest(startCoordinate: mapManager.getCoordinates(location: userLocation),
                                                          destinationCoordinate: mapManager.getCoordinates(location: selectedLocation))
         let directions = MKDirections(request: request)
         mapManager.resetMapView(map: map, directions: directions)

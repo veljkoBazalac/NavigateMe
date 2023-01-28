@@ -9,6 +9,7 @@ import Foundation
 
 struct Location {
     let name: String
+    let isoCode: String
     let latitude: Double
     let longitude: Double
 }
