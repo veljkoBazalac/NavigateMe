@@ -1,5 +1,5 @@
 //
-//  LocationManager.swift
+//  MapManager.swift
 //  NavigateMe
 //
 //  Created by Veljko Bažalac on 27.1.23..
@@ -15,21 +15,33 @@ class MapManager {
     
     let locationManager = CLLocationManager()
     
-    var annotations: [MKAnnotation] = []
-    
     var mapRegion : MKCoordinateRegion = MKCoordinateRegion()
     let mapSpan = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
     
+    var annotations: [MKAnnotation] = []
     var selectedLocation: Location? = nil
     var foundedDirections: [MKDirections] = []
-    
-    func resetMapView(map: MKMapView, directions: MKDirections) {
-        map.removeOverlays(map.overlays)
-        foundedDirections.append(directions)
-        let _ = foundedDirections.map { $0.cancel() }
-        foundedDirections.removeAll()
+}
+
+// MARK: - Directions
+extension MapManager {
+    // MARK: - Drop Pin On Map
+    func dropPin(map: MKMapView, coordinate: CLLocationCoordinate2D) {
+        let location = Location(name: "", latitude: coordinate.latitude, longitude: coordinate.longitude)
+        selectedLocation = location
+        
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = coordinate
+        getAddress(location: CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)) { address in
+            annotation.title = address
+        }
+        annotations.append(annotation)
+        map.addAnnotation(annotation)
+        
+        updateMapRegion(map: map, location: location)
     }
     
+    // MARK: - Create Directions Request
     func createDirectionsRequest(transportType: MKDirectionsTransportType,
                                  startCoordinate: CLLocationCoordinate2D,
                                  destinationCoordinate: CLLocationCoordinate2D) -> MKDirections.Request {
@@ -45,6 +57,40 @@ class MapManager {
         return request
     }
     
+    // MARK: - Remove directions
+    func resetMapView(map: MKMapView, directions: MKDirections) {
+        map.removeOverlays(map.overlays)
+        foundedDirections.append(directions)
+        let _ = foundedDirections.map { $0.cancel() }
+        foundedDirections.removeAll()
+    }
+    
+    // MARK: - Get Address
+    func getAddress(location: CLLocation, completion: @escaping (_ address: String) -> Void) {
+        let geoCoder = CLGeocoder()
+        
+        geoCoder.reverseGeocodeLocation(location) { placemarks, error in
+            if let error = error {
+                print(error.localizedDescription)
+                return
+            }
+            
+            guard let placemark = placemarks?.first else {
+                print("Error Getting Placemark")
+                return
+            }
+            
+            let streetName = placemark.thoroughfare ?? ""
+            let streetNumber = placemark.subThoroughfare ?? ""
+            let address = "\(streetName) - \(streetNumber)"
+            
+            completion(address)
+        }
+    }
+}
+
+// MARK: - Location and Map
+extension MapManager {
     // MARK: - Update Map Region
     func updateMapRegion(map: MKMapView, location: Location) {
         mapRegion = MKCoordinateRegion(center: getCoordinates(location: location),
@@ -54,6 +100,7 @@ class MapManager {
         }
     }
     
+    // MARK: - Check if Location Services are Enabled
     func checkLocationServices(map: MKMapView) {
         DispatchQueue.global().async {
             if CLLocationManager.locationServicesEnabled() {
@@ -70,7 +117,6 @@ class MapManager {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
             locationManager.requestAlwaysAuthorization()
-            break
         case .restricted:
             // Alert for restricted
             break
@@ -82,7 +128,6 @@ class MapManager {
             if let location = getUserLocation() {
                 updateMapRegion(map: map, location: location)
             }
-            break
         @unknown default:
             break
         }
@@ -102,5 +147,4 @@ class MapManager {
     func getCoordinates(location: Location) -> CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
     }
-    
 }

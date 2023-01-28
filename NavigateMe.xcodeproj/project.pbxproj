@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		812F439729854E7900E27F80 /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439629854E7900E27F80 /* UITextField.swift */; };
+		812F439B2985698F00E27F80 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439A2985698F00E27F80 /* AlertView.swift */; };
+		812F439F298571D800E27F80 /* SelectLocationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439E298571D800E27F80 /* SelectLocationVC.swift */; };
 		817CC04829845B4F00D50EDE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04729845B4F00D50EDE /* AppDelegate.swift */; };
 		817CC04A29845B4F00D50EDE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04929845B4F00D50EDE /* SceneDelegate.swift */; };
 		817CC04C29845B4F00D50EDE /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04B29845B4F00D50EDE /* MapVC.swift */; };
@@ -15,10 +18,13 @@
 		817CC05429845B5100D50EDE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 817CC05229845B5100D50EDE /* LaunchScreen.storyboard */; };
 		817CC05C29846E1500D50EDE /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC05B29846E1500D50EDE /* Location.swift */; };
 		817CC061298474D100D50EDE /* MapVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC060298474D100D50EDE /* MapVM.swift */; };
-		817CC0642984751D00D50EDE /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC0632984751D00D50EDE /* LocationManager.swift */; };
+		817CC0642984751D00D50EDE /* MapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC0632984751D00D50EDE /* MapManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		812F439629854E7900E27F80 /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
+		812F439A2985698F00E27F80 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
+		812F439E298571D800E27F80 /* SelectLocationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectLocationVC.swift; sourceTree = "<group>"; };
 		817CC04429845B4F00D50EDE /* NavigateMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavigateMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		817CC04729845B4F00D50EDE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		817CC04929845B4F00D50EDE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -29,7 +35,7 @@
 		817CC05529845B5100D50EDE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		817CC05B29846E1500D50EDE /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		817CC060298474D100D50EDE /* MapVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVM.swift; sourceTree = "<group>"; };
-		817CC0632984751D00D50EDE /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		817CC0632984751D00D50EDE /* MapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +49,22 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		812F43A0298571EA00E27F80 /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				812F439A2985698F00E27F80 /* AlertView.swift */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
+		812F43A12985732400E27F80 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				812F439629854E7900E27F80 /* UITextField.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		817CC03B29845B4F00D50EDE = {
 			isa = PBXGroup;
 			children = (
@@ -64,6 +86,7 @@
 			children = (
 				817CC04729845B4F00D50EDE /* AppDelegate.swift */,
 				817CC04929845B4F00D50EDE /* SceneDelegate.swift */,
+				812F43A12985732400E27F80 /* Extensions */,
 				817CC05D2984749500D50EDE /* Model */,
 				817CC062298474DC00D50EDE /* Services */,
 				817CC05E298474A000D50EDE /* View */,
@@ -88,6 +111,8 @@
 			isa = PBXGroup;
 			children = (
 				817CC04B29845B4F00D50EDE /* MapVC.swift */,
+				812F439E298571D800E27F80 /* SelectLocationVC.swift */,
+				812F43A0298571EA00E27F80 /* Component */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -103,7 +128,7 @@
 		817CC062298474DC00D50EDE /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				817CC0632984751D00D50EDE /* LocationManager.swift */,
+				817CC0632984751D00D50EDE /* MapManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -181,8 +206,11 @@
 			files = (
 				817CC061298474D100D50EDE /* MapVM.swift in Sources */,
 				817CC04C29845B4F00D50EDE /* MapVC.swift in Sources */,
-				817CC0642984751D00D50EDE /* LocationManager.swift in Sources */,
+				812F439729854E7900E27F80 /* UITextField.swift in Sources */,
+				817CC0642984751D00D50EDE /* MapManager.swift in Sources */,
+				812F439F298571D800E27F80 /* SelectLocationVC.swift in Sources */,
 				817CC04829845B4F00D50EDE /* AppDelegate.swift in Sources */,
+				812F439B2985698F00E27F80 /* AlertView.swift in Sources */,
 				817CC04A29845B4F00D50EDE /* SceneDelegate.swift in Sources */,
 				817CC05C29846E1500D50EDE /* Location.swift in Sources */,
 			);

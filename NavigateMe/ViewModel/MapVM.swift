@@ -13,29 +13,58 @@ import CoreLocation
 class MapVM: NSObject {
     
     let mapManager = MapManager.shared
+    var selectedTransportType: MKDirectionsTransportType = .walking
     
-    var selectedTransitMode: MKDirectionsTransportType = .walking
+    var keyboardIsShown: Bool = false
     
-    // MARK: - Drop Pin
-    func dropPin(tap: UITapGestureRecognizer, map: MKMapView, completion: () -> Void) {
+    // MARK: - Drop Pin on User Tap
+    func userPlacedPin(tap: UITapGestureRecognizer, map: MKMapView, completion: () -> Void) {
         // Position on the screen, CGPoint
         let screenPoint = tap.location(in: map)
         // Position on the map, CLLocationCoordinate2D
         let coordinate = map.convert(screenPoint, toCoordinateFrom: map)
         
-        let location = Location(name: "Selected Pin", latitude: coordinate.latitude, longitude: coordinate.longitude)
-        mapManager.selectedLocation = location
-        
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = coordinate
-        annotation.title = location.name
         map.removeAnnotations(mapManager.annotations)
-        mapManager.annotations.append(annotation)
-        map.addAnnotation(annotation)
-        
-        mapManager.updateMapRegion(map: map, location: location)
+        mapManager.dropPin(map: map, coordinate: coordinate)
         
         completion()
+    }
+    
+    // MARK: - Drop Pin on User Search
+    func userSearchedPin(map: MKMapView,
+                         address: String,
+                         onSuccess: @escaping () -> Void,
+                         onError: @escaping (_ title: String, _ body: String) -> Void) {
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = address
+        
+        let search = MKLocalSearch(request: request)
+        search.start { [weak self] response, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print(error.localizedDescription)
+                onError("Can't Find Location", "Please check if you entered right location")
+                return
+            }
+            
+            guard let response = response else {
+                onError("Response Error", "Please try again")
+                return
+            }
+            
+            guard response.mapItems.count > 0 else {
+                onError("No locations founded", "Please try again")
+                return
+            }
+            
+            map.removeAnnotations(self.mapManager.annotations)
+            for item in response.mapItems {
+                self.mapManager.dropPin(map: map, coordinate: item.placemark.coordinate)
+            }
+            
+            onSuccess()
+        }
     }
     
     // MARK: - Save Location
@@ -55,7 +84,7 @@ class MapVM: NSObject {
             return
         }
         
-        let request = mapManager.createDirectionsRequest(transportType: selectedTransitMode,
+        let request = mapManager.createDirectionsRequest(transportType: self.selectedTransportType,
                                                          startCoordinate: mapManager.getCoordinates(location: userLocation),
                                                          destinationCoordinate: mapManager.getCoordinates(location: selectedLocation))
         let directions = MKDirections(request: request)
@@ -99,6 +128,4 @@ class MapVM: NSObject {
         map.removeOverlays(map.overlays)
         completion()
     }
-    
-    
 }
