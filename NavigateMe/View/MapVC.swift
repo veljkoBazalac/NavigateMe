@@ -26,6 +26,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 10
         view.isHidden = true
+        view.dropShadow()
         return view
     }()
     
@@ -60,7 +61,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         let tf = UITextField()
         tf.translatesAutoresizingMaskIntoConstraints = false
         tf.attributedPlaceholder = NSAttributedString(
-            string: "Search Address...",
+            string: "Type City + Street...",
             attributes: [NSAttributedString.Key.foregroundColor: UIColor.darkGray]
         )
         tf.backgroundColor = .lightText
@@ -234,6 +235,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     
     private var tapRecognizer = UITapGestureRecognizer()
     private var vm = MapVM()
+    private var alertManager = AlertManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -244,7 +246,11 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         setUIElements()
         addGesutures()
         setupLocationManager()
-        vm.mapManager.checkLocationServices(map: self.mapView)
+        vm.mapManager.checkLocationServices(map: self.mapView) {
+            DispatchQueue.main.async {
+                self.vm.alertManager.addEnableLocationAlert(vc: self)
+            }
+        }
         vm.coreDataManager.fetchLocations()
     }
     
@@ -289,7 +295,7 @@ extension MapVC {
     // MARK: - Show Saved Locations List
     @objc func showSavedLocationsList() {
         if vm.coreDataManager.savedLocations.isEmpty {
-            AlertView.shared.addAlert(vc: self, title: "No Saved Locations", body: "")
+            vm.alertManager.addOKAlert(vc: self, title: "No Saved Locations", body: "")
         } else {
             let vc = SelectLocationVC()
             vc.delegate = self
@@ -319,7 +325,7 @@ extension MapVC {
     @objc func saveLocationPressed() {
         vm.saveLocation {
             UIView.animate(withDuration: 1.0) {
-                HapticManager.shared.vibration(type: .success)
+                self.vm.hapticManager.vibration(type: .success)
                 self.showSavedLocationsButton.tintColor = UIColor.green
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                     self.showSavedLocationsButton.tintColor = UIColor.systemOrange
@@ -331,7 +337,9 @@ extension MapVC {
     // MARK: - Show Directions for Selected Location
     @objc func showDirectionsPressed() {
         if vm.directionsMode == false {
-            vm.showDirections(map: self.mapView) {
+            vm.showDirections(map: self.mapView) { msg in
+                self.vm.alertManager.addOKAlert(vc: self, title: "Directions Error", body: msg)
+            } onSuccess: {
                 self.topView.isHidden = true
                 self.vm.directionsMode = true
                 self.showDirectionsButton.setImage(UIImage(systemName: "location.north.circle.fill"), for: .normal)
@@ -341,17 +349,18 @@ extension MapVC {
             // Start Navigation
             rightView.isHidden = true
             leftView.isHidden = true
-            // Arrow View
+            // Add Arrow View
             mapView.addSubview(arrowBackgroundView)
             arrowBackgroundView.addSubview(arrow)
             arrowBackgroundView.addSubview(distanceLabel)
             arrowBackgroundView.isHidden = false
             setArrowView()
-            // Cancel Navigation View
+            // Add Cancel Navigation View
             mapView.addSubview(cancelNavigationView)
             cancelNavigationView.addSubview(cancelNavigationButton)
             cancelNavigationView.isHidden = false
             setCancelNavigationView()
+            // Start Updating Heading Direction
             vm.mapManager.locationManager.startUpdatingHeading()
         }
     }
@@ -382,7 +391,7 @@ extension MapVC: UITextFieldDelegate, MKLocalSearchCompleterDelegate {
             let address = textField.text,
             textField.text != "" else {
             self.view.endEditing(true)
-            AlertView.shared.addAlert(vc: self, title: "Empty Textfield", body: "Search Textfield can NOT be empty")
+            vm.alertManager.addOKAlert(vc: self, title: "Empty Textfield", body: "Search Textfield can NOT be empty")
             return false
         }
         
@@ -409,7 +418,7 @@ extension MapVC: UITextFieldDelegate, MKLocalSearchCompleterDelegate {
                 self.view.isUserInteractionEnabled = true
                 self.view.endEditing(true)
             }
-            AlertView.shared.addAlert(vc: self, title: title, body: body)
+            self.vm.alertManager.addOKAlert(vc: self, title: title, body: body)
         }
         return true
     }
@@ -426,7 +435,11 @@ extension MapVC: CLLocationManagerDelegate, MKMapViewDelegate {
     
     // MARK: - Did Change Authorization Delegate Method
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        vm.mapManager.checkLocationAuth(map: self.mapView)
+        vm.mapManager.checkLocationAuth(map: self.mapView) {
+            DispatchQueue.main.async {
+                self.vm.alertManager.addEnableLocationAlert(vc: self)
+            }
+        }
     }
     
     // MARK: - Remove Keyboard on Drag
@@ -483,7 +496,6 @@ extension MapVC {
         mapView.frame = view.bounds
         view.addSubview(mapView)
         // Top View
-        
         mapView.addSubview(topView)
         topView.addSubview(transportTypeButton)
         topView.addSubview(searchLocationTF)

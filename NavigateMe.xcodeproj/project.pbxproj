@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		812F439729854E7900E27F80 /* UITextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439629854E7900E27F80 /* UITextField.swift */; };
-		812F439B2985698F00E27F80 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439A2985698F00E27F80 /* AlertView.swift */; };
+		812F439B2985698F00E27F80 /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439A2985698F00E27F80 /* AlertManager.swift */; };
 		812F439F298571D800E27F80 /* SelectLocationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F439E298571D800E27F80 /* SelectLocationVC.swift */; };
 		812F43A42985745400E27F80 /* LocationsContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A22985745400E27F80 /* LocationsContainer.xcdatamodeld */; };
 		812F43A6298574AC00E27F80 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A5298574AC00E27F80 /* CoreDataManager.swift */; };
 		812F43AA298582D600E27F80 /* SavedLocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A9298582D600E27F80 /* SavedLocationCell.swift */; };
-		8162D446298805CE00A1C7F2 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D445298805CE00A1C7F2 /* UIImage.swift */; };
+		8162D446298805CE00A1C7F2 /* CLLocationCoordinate2D.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D445298805CE00A1C7F2 /* CLLocationCoordinate2D.swift */; };
 		8162D448298805EC00A1C7F2 /* CGFloat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D447298805EC00A1C7F2 /* CGFloat.swift */; };
 		8162D44E29887FF500A1C7F2 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D44D29887FF500A1C7F2 /* UIView.swift */; };
 		8162D4502988856B00A1C7F2 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D44F2988856B00A1C7F2 /* HapticManager.swift */; };
@@ -29,12 +29,12 @@
 
 /* Begin PBXFileReference section */
 		812F439629854E7900E27F80 /* UITextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITextField.swift; sourceTree = "<group>"; };
-		812F439A2985698F00E27F80 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
+		812F439A2985698F00E27F80 /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
 		812F439E298571D800E27F80 /* SelectLocationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectLocationVC.swift; sourceTree = "<group>"; };
 		812F43A32985745400E27F80 /* LocationsContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LocationsContainer.xcdatamodel; sourceTree = "<group>"; };
 		812F43A5298574AC00E27F80 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		812F43A9298582D600E27F80 /* SavedLocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocationCell.swift; sourceTree = "<group>"; };
-		8162D445298805CE00A1C7F2 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		8162D445298805CE00A1C7F2 /* CLLocationCoordinate2D.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLLocationCoordinate2D.swift; sourceTree = "<group>"; };
 		8162D447298805EC00A1C7F2 /* CGFloat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGFloat.swift; sourceTree = "<group>"; };
 		8162D44D29887FF500A1C7F2 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
 		8162D44F2988856B00A1C7F2 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "\U0010HapticManager.swift"; sourceTree = "<group>"; };
@@ -64,7 +64,6 @@
 		812F43A0298571EA00E27F80 /* Component */ = {
 			isa = PBXGroup;
 			children = (
-				812F439A2985698F00E27F80 /* AlertView.swift */,
 				812F43A9298582D600E27F80 /* SavedLocationCell.swift */,
 			);
 			path = Component;
@@ -74,7 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				812F439629854E7900E27F80 /* UITextField.swift */,
-				8162D445298805CE00A1C7F2 /* UIImage.swift */,
+				8162D445298805CE00A1C7F2 /* CLLocationCoordinate2D.swift */,
 				8162D447298805EC00A1C7F2 /* CGFloat.swift */,
 				8162D44D29887FF500A1C7F2 /* UIView.swift */,
 			);
@@ -147,6 +146,7 @@
 				817CC0632984751D00D50EDE /* MapManager.swift */,
 				812F43A5298574AC00E27F80 /* CoreDataManager.swift */,
 				8162D44F2988856B00A1C7F2 /* HapticManager.swift */,
+				812F439A2985698F00E27F80 /* AlertManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -230,12 +230,12 @@
 				812F439F298571D800E27F80 /* SelectLocationVC.swift in Sources */,
 				817CC04829845B4F00D50EDE /* AppDelegate.swift in Sources */,
 				812F43AA298582D600E27F80 /* SavedLocationCell.swift in Sources */,
-				812F439B2985698F00E27F80 /* AlertView.swift in Sources */,
+				812F439B2985698F00E27F80 /* AlertManager.swift in Sources */,
 				817CC04A29845B4F00D50EDE /* SceneDelegate.swift in Sources */,
 				8162D44E29887FF500A1C7F2 /* UIView.swift in Sources */,
 				812F43A42985745400E27F80 /* LocationsContainer.xcdatamodeld in Sources */,
 				817CC05C29846E1500D50EDE /* Location.swift in Sources */,
-				8162D446298805CE00A1C7F2 /* UIImage.swift in Sources */,
+				8162D446298805CE00A1C7F2 /* CLLocationCoordinate2D.swift in Sources */,
 				812F43A6298574AC00E27F80 /* CoreDataManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -396,9 +396,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.veljkobazalac.NavigateMe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -430,9 +433,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.veljkobazalac.NavigateMe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

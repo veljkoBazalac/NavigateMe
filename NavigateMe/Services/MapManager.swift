@@ -132,28 +132,28 @@ extension MapManager {
     }
     
     // MARK: - Check if Location Services are Enabled
-    func checkLocationServices(map: MKMapView) {
+    func checkLocationServices(map: MKMapView, onError: @escaping () -> Void) {
         DispatchQueue.global().async {
             if CLLocationManager.locationServicesEnabled() {
-                self.checkLocationAuth(map: map)
+                self.checkLocationAuth(map: map) {
+                    onError()
+                }
             } else {
-                // Alert to turn it on
+                onError()
             }
         }
     }
     
     // MARK: - Check Auth Status
-    func checkLocationAuth(map: MKMapView) {
+    func checkLocationAuth(map: MKMapView, onError: () -> Void) {
         switch locationManager.authorizationStatus {
         case .notDetermined:
             locationManager.requestWhenInUseAuthorization()
             locationManager.requestAlwaysAuthorization()
         case .restricted:
-            // Alert for restricted
-            break
+            onError()
         case .denied:
-            // Alert how to turn on permissions
-            break
+            onError()
         case .authorizedAlways, .authorizedWhenInUse:
             map.showsUserLocation = true
             if let location = getUserLocation() {
@@ -167,7 +167,10 @@ extension MapManager {
     // MARK: - Current User Location
     func getUserLocation() -> Location? {
         if let location = locationManager.location?.coordinate {
-            let selectedLocation = Location(name: "You", isoCode: "", latitude: location.latitude, longitude: location.longitude)
+            let selectedLocation = Location(name: "You",
+                                            isoCode: "",
+                                            latitude: location.latitude,
+                                            longitude: location.longitude)
             return selectedLocation
         } else {
             return nil

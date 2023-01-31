@@ -15,6 +15,7 @@ class MapVM: NSObject {
     let mapManager = MapManager.shared
     let coreDataManager = CoreDataManager.shared
     let hapticManager = HapticManager.shared
+    let alertManager = AlertManager.shared
     
     var keyboardIsShown: Bool = false
     var directionsMode: Bool = false
@@ -44,6 +45,7 @@ extension MapVM {
                          onError: @escaping (_ title: String, _ body: String) -> Void) {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = address
+        request.region = map.region
         
         let search = MKLocalSearch(request: request)
         search.start { [weak self] response, error in
@@ -70,9 +72,9 @@ extension MapVM {
             
             map.removeAnnotations(self.mapManager.annotations)
             
-            for item in response.mapItems {
-                self.mapManager.dropPin(map: map, coordinate: item.placemark.coordinate)
-            }
+            let mapItem = response.mapItems[0]
+            let itemCoordinates = mapItem.placemark.coordinate
+            self.mapManager.dropPin(map: map, coordinate: itemCoordinates)
             
             onSuccess()
         }
@@ -107,16 +109,16 @@ extension MapVM {
     }
     
     // MARK: - Show Directions
-    func showDirections(map: MKMapView, completion: @escaping () -> Void) {
+    func showDirections(map: MKMapView, onError: @escaping (_ msg: String) -> Void, onSuccess: @escaping () -> Void) {
         guard let userLocation = mapManager.getUserLocation() else {
             hapticManager.vibration(type: .error)
-            print("Cant Get Current User Location.")
+            onError("Cant Get Current User Location.")
             return
         }
         
         guard let selectedLocation = mapManager.selectedLocation else {
             hapticManager.vibration(type: .error)
-            print("Cant Get Selected Location.")
+            onError("Cant Get Selected Location.")
             return
         }
         
@@ -128,12 +130,12 @@ extension MapVM {
         directions.calculate { [weak self] response, error in
             if let error = error {
                 self?.hapticManager.vibration(type: .error)
-                print("Directions Error: \(error.localizedDescription)")
+                onError("Directions Error: \(error.localizedDescription)")
             }
             
             guard let response = response else {
                 self?.hapticManager.vibration(type: .error)
-                print("Response Error.")
+                onError("Response Error.")
                 return
             }
             
@@ -152,7 +154,7 @@ extension MapVM {
                 polyRect.origin.y -= horizontalPadding / 2
                 
                 map.setVisibleMapRect(polyRect, animated: true)
-                completion()
+                onSuccess()
             }
         }
     }

@@ -34,6 +34,8 @@ class SelectLocationVC: UIViewController {
     
     private let coreDataManager = CoreDataManager.shared
     private let mapManager = MapManager.shared
+    private let hapticManager = HapticManager.shared
+    private let alertManager = AlertManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,30 +44,7 @@ class SelectLocationVC: UIViewController {
         tableView.dataSource = self
         tableView.rowHeight = 80
         tableView.showsVerticalScrollIndicator = false
-        
         setUIElements()
-    }
-}
-
-// MARK: - UI Elements
-extension SelectLocationVC {
-    // MARK: - Set UI
-    private func setUIElements() {
-        view.addSubview(titleLabel)
-        view.addSubview(tableView)
-        
-        setConstrains()
-    }
-    
-    private func setConstrains() {
-        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
-        titleLabel.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        titleLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
-        
-        tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     }
 }
 
@@ -83,7 +62,7 @@ extension SelectLocationVC: UITableViewDelegate, UITableViewDataSource, OpenGoog
     
         cell.countryFlag.text = location.isoCode
         cell.nameLabel.text = location.name
-        cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         cell.delegate = self
 
         return cell
@@ -99,7 +78,7 @@ extension SelectLocationVC: UITableViewDelegate, UITableViewDataSource, OpenGoog
         if editingStyle == .delete {
             coreDataManager.deleteLocation(index: indexPath.row) {
                 DispatchQueue.main.async {
-                    HapticManager.shared.vibration(type: .success)
+                    self.hapticManager.vibration(type: .success)
                     self.tableView.deleteRows(at: [indexPath], with: .fade)
                     if self.coreDataManager.savedLocations.isEmpty {
                         self.dismiss(animated: true)
@@ -112,7 +91,8 @@ extension SelectLocationVC: UITableViewDelegate, UITableViewDataSource, OpenGoog
     // MARK: - Delegate Method
     func openGoogleMaps(cell: SavedLocationCell) {
         guard let indexPath = self.tableView.indexPath(for: cell) else {
-            print("Error Getting IndexPath for Cell.")
+            hapticManager.vibration(type: .error)
+            alertManager.addOKAlert(vc: self, title: "Google Maps Error", body: "Error Finding Cell number.")
             return
         }
         
@@ -121,7 +101,8 @@ extension SelectLocationVC: UITableViewDelegate, UITableViewDataSource, OpenGoog
         guard
             let name = locationEntity.name,
             let iso = locationEntity.isoCode else {
-            print("Error Getting Name and ISO Code.")
+            hapticManager.vibration(type: .error)
+            alertManager.addOKAlert(vc: self, title: "Google Maps Error", body: "Error Getting Name and ISO Code.")
             return
         }
         
@@ -131,5 +112,26 @@ extension SelectLocationVC: UITableViewDelegate, UITableViewDataSource, OpenGoog
                                 longitude: locationEntity.longitude)
         
         mapManager.openGoogleMaps(location: location)
+    }
+}
+
+// MARK: - UI Elements
+extension SelectLocationVC {
+    // MARK: - Set UI
+    private func setUIElements() {
+        view.addSubview(titleLabel)
+        view.addSubview(tableView)
+        setConstrains()
+    }
+    
+    private func setConstrains() {
+        titleLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
+        titleLabel.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        titleLabel.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        
+        tableView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 20).isActive = true
+        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     }
 }
