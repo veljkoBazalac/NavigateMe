@@ -51,6 +51,8 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         let view = UIView()
         view.backgroundColor = .darkGray
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 10
+        view.dropShadow()
         return view
     }()
     
@@ -97,21 +99,14 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         return button
     }()
     
-    // MARK: - Saved Locations
-    private let savedView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .orange
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.isHidden = true
-        return view
-    }()
-    
     // MARK: - Right Side View
     private let rightView: UIView = {
         let view = UIView()
         view.backgroundColor = .darkGray
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isHidden = true
+        view.layer.cornerRadius = 10
+        view.dropShadow()
         return view
     }()
     
@@ -168,6 +163,8 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         view.backgroundColor = .darkGray
         view.translatesAutoresizingMaskIntoConstraints = false
         view.isHidden = true
+        view.layer.cornerRadius = 10
+        view.dropShadow()
         return view
     }()
     
@@ -183,8 +180,60 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
         return button
     }()
     
-    var tapRecognizer = UITapGestureRecognizer()
-    var vm = MapVM()
+    // MARK: - Navigation Arrow View
+    private let arrowBackgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .darkGray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 10
+        view.isHidden = true
+        view.dropShadow()
+        return view
+    }()
+    
+    private let arrow: UIImageView = {
+        let iv = UIImageView()
+        iv.image = UIImage(systemName: "location.north.line")
+        iv.tintColor = .systemOrange
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.contentMode = .scaleAspectFit
+        return iv
+    }()
+    
+    private let distanceLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .center
+        return label
+    }()
+    
+    // MARK: - Cancel Navigation View
+    private let cancelNavigationView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .darkGray
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 10
+        view.isHidden = true
+        view.dropShadow()
+        return view
+    }()
+    
+    private lazy var cancelNavigationButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "xmark.circle"), for: .normal)
+        button.tintColor = .systemRed
+        button.setTitle(nil, for: .normal)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.contentVerticalAlignment = .fill
+        button.contentHorizontalAlignment = .fill
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.addTarget(self, action: #selector(cancelNavigationPressed), for: .touchUpInside)
+        return button
+    }()
+    
+    private var tapRecognizer = UITapGestureRecognizer()
+    private var vm = MapVM()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -268,7 +317,15 @@ extension MapVC {
     
     // MARK: - Save Location
     @objc func saveLocationPressed() {
-        vm.saveLocation()
+        vm.saveLocation {
+            UIView.animate(withDuration: 1.0) {
+                HapticManager.shared.vibration(type: .success)
+                self.showSavedLocationsButton.tintColor = UIColor.green
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    self.showSavedLocationsButton.tintColor = UIColor.systemOrange
+                }
+            }
+        }
     }
     
     // MARK: - Show Directions for Selected Location
@@ -281,8 +338,21 @@ extension MapVC {
                 self.showDirectionsButton.tintColor = .systemBlue
             }
         } else {
-            //TODO: OPEN AND USE NAVIGATION COMPAS ARROW
-            print("NAVIGATE")
+            // Start Navigation
+            rightView.isHidden = true
+            leftView.isHidden = true
+            // Arrow View
+            mapView.addSubview(arrowBackgroundView)
+            arrowBackgroundView.addSubview(arrow)
+            arrowBackgroundView.addSubview(distanceLabel)
+            arrowBackgroundView.isHidden = false
+            setArrowView()
+            // Cancel Navigation View
+            mapView.addSubview(cancelNavigationView)
+            cancelNavigationView.addSubview(cancelNavigationButton)
+            cancelNavigationView.isHidden = false
+            setCancelNavigationView()
+            vm.mapManager.locationManager.startUpdatingHeading()
         }
     }
     
@@ -297,7 +367,7 @@ extension MapVC {
 // MARK: - Go To Saved Location Delegate
 extension MapVC: GoToSavedLocationDelegate {
     func didSelectSavedLocation(location: LocationEntity) {
-        vm.saveLocationSelected(map: self.mapView, location: location) {
+        vm.savedLocationPin(map: self.mapView, location: location) {
             self.rightView.isHidden = false
             self.leftView.isHidden = false
         }
@@ -351,7 +421,7 @@ extension MapVC: CLLocationManagerDelegate, MKMapViewDelegate {
     func setupLocationManager() {
         mapView.delegate = self
         vm.mapManager.locationManager.delegate = self
-        vm.mapManager.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        vm.mapManager.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
     }
     
     // MARK: - Did Change Authorization Delegate Method
@@ -373,6 +443,37 @@ extension MapVC: CLLocationManagerDelegate, MKMapViewDelegate {
         renderer.strokeColor = UIColor.systemBlue
         return renderer
     }
+    
+    // MARK: - Update Heading Changes to Arrow Pointing
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        if
+            let userLocation = vm.mapManager.getUserLocation(),
+            let selectedLocation = vm.mapManager.selectedLocation {
+            UIView.animate(withDuration: 0.5) { [self] in
+                let rotation = vm.calculateAnnotationDegree(heading: newHeading.trueHeading, start: userLocation, destination: selectedLocation).toRadians
+                arrow.transform = CGAffineTransform(rotationAngle: rotation)
+                vm.calculateDistance(start: userLocation, destination: selectedLocation) { distance in
+                    distanceLabel.text = distance
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Navigation
+extension MapVC {
+    // MARK: - Cancel Navigation
+    @objc func cancelNavigationPressed() {
+        arrowBackgroundView.isHidden = true
+        cancelNavigationView.isHidden = true
+        rightView.isHidden = false
+        leftView.isHidden = false
+        distanceLabel.removeFromSuperview()
+        arrow.removeFromSuperview()
+        arrowBackgroundView.removeFromSuperview()
+        cancelNavigationView.removeFromSuperview()
+        vm.mapManager.locationManager.stopUpdatingHeading()
+    }
 }
 
 // MARK: - UI Elements
@@ -382,6 +483,7 @@ extension MapVC {
         mapView.frame = view.bounds
         view.addSubview(mapView)
         // Top View
+        
         mapView.addSubview(topView)
         topView.addSubview(transportTypeButton)
         topView.addSubview(searchLocationTF)
@@ -412,7 +514,6 @@ extension MapVC {
         topView.leftAnchor.constraint(equalTo: mapView.leftAnchor, constant: 12).isActive = true
         topView.rightAnchor.constraint(equalTo: mapView.rightAnchor, constant: -12).isActive = true
         topView.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        topView.layer.cornerRadius = 10
 
         transportTypeButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
         transportTypeButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -438,6 +539,7 @@ extension MapVC {
         loadingView.centerXAnchor.constraint(equalTo: topView.centerXAnchor).isActive = true
         loadingView.heightAnchor.constraint(equalToConstant: 70).isActive = true
         loadingView.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        loadingView.dropShadow()
         
         activityIndicator.topAnchor.constraint(equalTo: loadingView.topAnchor, constant: 10).isActive = true
         activityIndicator.centerXAnchor.constraint(equalTo: loadingView.centerXAnchor).isActive = true
@@ -454,7 +556,6 @@ extension MapVC {
         rightView.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -40).isActive = true
         rightView.heightAnchor.constraint(equalToConstant: 220).isActive = true
         rightView.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        rightView.layer.cornerRadius = 10
 
         buttonsStack.centerXAnchor.constraint(equalTo: rightView.centerXAnchor).isActive = true
         buttonsStack.centerYAnchor.constraint(equalTo: rightView.centerYAnchor).isActive = true
@@ -470,16 +571,45 @@ extension MapVC {
         
     }
     
+    // MARK: - Left Side View
     private func setLeftView() {
         leftView.leftAnchor.constraint(equalTo: mapView.leftAnchor, constant: 20).isActive = true
         leftView.bottomAnchor.constraint(equalTo: mapView.bottomAnchor, constant: -40).isActive = true
         leftView.heightAnchor.constraint(equalToConstant: 60).isActive = true
         leftView.widthAnchor.constraint(equalToConstant: 60).isActive = true
-        leftView.layer.cornerRadius = 10
         
         googleMapsButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
         googleMapsButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         googleMapsButton.centerXAnchor.constraint(equalTo: leftView.centerXAnchor).isActive = true
         googleMapsButton.centerYAnchor.constraint(equalTo: leftView.centerYAnchor).isActive = true
+    }
+    
+    // MARK: - Arrow Image
+    private func setArrowView() {
+        arrowBackgroundView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        arrowBackgroundView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        arrowBackgroundView.heightAnchor.constraint(equalToConstant: 84).isActive = true
+        arrowBackgroundView.widthAnchor.constraint(equalToConstant: 84).isActive = true
+        
+        arrow.topAnchor.constraint(equalTo: arrowBackgroundView.topAnchor, constant: 8).isActive = true
+        arrow.centerXAnchor.constraint(equalTo: arrowBackgroundView.centerXAnchor).isActive = true
+        arrow.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        arrow.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        distanceLabel.topAnchor.constraint(equalTo: arrow.bottomAnchor, constant: 4).isActive = true
+        distanceLabel.centerXAnchor.constraint(equalTo: arrow.centerXAnchor).isActive = true
+    }
+    
+    // MARK: - Cancel Navigation
+    private func setCancelNavigationView() {
+        cancelNavigationView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
+        cancelNavigationView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        cancelNavigationView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        cancelNavigationView.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        cancelNavigationButton.centerXAnchor.constraint(equalTo: cancelNavigationView.centerXAnchor).isActive = true
+        cancelNavigationButton.centerYAnchor.constraint(equalTo: cancelNavigationView.centerYAnchor).isActive = true
+        cancelNavigationButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        cancelNavigationButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
     }
 }

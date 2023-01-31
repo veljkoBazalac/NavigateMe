@@ -29,7 +29,7 @@ extension CoreDataManager {
     }
     
     // MARK: - Save Location
-    func saveLocation(location: Location) {
+    func saveLocation(location: Location, completion: () -> Void) {
         let newLocation = LocationEntity(context: context)
         newLocation.name = location.name
         newLocation.isoCode = location.isoCode
@@ -43,6 +43,7 @@ extension CoreDataManager {
         }
         
         fetchLocations()
+        completion()
     }
     
     // MARK: - Delete Saved Location

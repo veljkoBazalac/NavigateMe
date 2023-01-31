@@ -99,7 +99,11 @@ extension SelectLocationVC: UITableViewDelegate, UITableViewDataSource, OpenGoog
         if editingStyle == .delete {
             coreDataManager.deleteLocation(index: indexPath.row) {
                 DispatchQueue.main.async {
+                    HapticManager.shared.vibration(type: .success)
                     self.tableView.deleteRows(at: [indexPath], with: .fade)
+                    if self.coreDataManager.savedLocations.isEmpty {
+                        self.dismiss(animated: true)
+                    }
                 }
             }
         }

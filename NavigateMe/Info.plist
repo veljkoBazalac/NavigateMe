@@ -6,12 +6,6 @@
 	<array>
 		<string>comgooglemaps</string>
 	</array>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Please allow your location.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Please allow your location.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Please allow your location.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -13,6 +13,10 @@
 		812F43A42985745400E27F80 /* LocationsContainer.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A22985745400E27F80 /* LocationsContainer.xcdatamodeld */; };
 		812F43A6298574AC00E27F80 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A5298574AC00E27F80 /* CoreDataManager.swift */; };
 		812F43AA298582D600E27F80 /* SavedLocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F43A9298582D600E27F80 /* SavedLocationCell.swift */; };
+		8162D446298805CE00A1C7F2 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D445298805CE00A1C7F2 /* UIImage.swift */; };
+		8162D448298805EC00A1C7F2 /* CGFloat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D447298805EC00A1C7F2 /* CGFloat.swift */; };
+		8162D44E29887FF500A1C7F2 /* UIView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D44D29887FF500A1C7F2 /* UIView.swift */; };
+		8162D4502988856B00A1C7F2 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8162D44F2988856B00A1C7F2 /* HapticManager.swift */; };
 		817CC04829845B4F00D50EDE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04729845B4F00D50EDE /* AppDelegate.swift */; };
 		817CC04A29845B4F00D50EDE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04929845B4F00D50EDE /* SceneDelegate.swift */; };
 		817CC04C29845B4F00D50EDE /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 817CC04B29845B4F00D50EDE /* MapVC.swift */; };
@@ -30,6 +34,10 @@
 		812F43A32985745400E27F80 /* LocationsContainer.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LocationsContainer.xcdatamodel; sourceTree = "<group>"; };
 		812F43A5298574AC00E27F80 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		812F43A9298582D600E27F80 /* SavedLocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedLocationCell.swift; sourceTree = "<group>"; };
+		8162D445298805CE00A1C7F2 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		8162D447298805EC00A1C7F2 /* CGFloat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGFloat.swift; sourceTree = "<group>"; };
+		8162D44D29887FF500A1C7F2 /* UIView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIView.swift; sourceTree = "<group>"; };
+		8162D44F2988856B00A1C7F2 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "\U0010HapticManager.swift"; sourceTree = "<group>"; };
 		817CC04429845B4F00D50EDE /* NavigateMe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavigateMe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		817CC04729845B4F00D50EDE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		817CC04929845B4F00D50EDE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,6 +74,9 @@
 			isa = PBXGroup;
 			children = (
 				812F439629854E7900E27F80 /* UITextField.swift */,
+				8162D445298805CE00A1C7F2 /* UIImage.swift */,
+				8162D447298805EC00A1C7F2 /* CGFloat.swift */,
+				8162D44D29887FF500A1C7F2 /* UIView.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -135,6 +146,7 @@
 			children = (
 				817CC0632984751D00D50EDE /* MapManager.swift */,
 				812F43A5298574AC00E27F80 /* CoreDataManager.swift */,
+				8162D44F2988856B00A1C7F2 /* HapticManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -211,6 +223,8 @@
 			files = (
 				817CC061298474D100D50EDE /* MapVM.swift in Sources */,
 				817CC04C29845B4F00D50EDE /* MapVC.swift in Sources */,
+				8162D448298805EC00A1C7F2 /* CGFloat.swift in Sources */,
+				8162D4502988856B00A1C7F2 /* HapticManager.swift in Sources */,
 				812F439729854E7900E27F80 /* UITextField.swift in Sources */,
 				817CC0642984751D00D50EDE /* MapManager.swift in Sources */,
 				812F439F298571D800E27F80 /* SelectLocationVC.swift in Sources */,
@@ -218,8 +232,10 @@
 				812F43AA298582D600E27F80 /* SavedLocationCell.swift in Sources */,
 				812F439B2985698F00E27F80 /* AlertView.swift in Sources */,
 				817CC04A29845B4F00D50EDE /* SceneDelegate.swift in Sources */,
+				8162D44E29887FF500A1C7F2 /* UIView.swift in Sources */,
 				812F43A42985745400E27F80 /* LocationsContainer.xcdatamodeld in Sources */,
 				817CC05C29846E1500D50EDE /* Location.swift in Sources */,
+				8162D446298805CE00A1C7F2 /* UIImage.swift in Sources */,
 				812F43A6298574AC00E27F80 /* CoreDataManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -362,9 +378,15 @@
 				DEVELOPMENT_TEAM = 4L9MK9G9TT;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NavigateMe/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Please allow your location.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Please allow your location.";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Please allow your location.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please allow your location.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -390,9 +412,15 @@
 				DEVELOPMENT_TEAM = 4L9MK9G9TT;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NavigateMe/Info.plist;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "Please allow your location.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "Please allow your location.";
+				INFOPLIST_KEY_NSLocationUsageDescription = "Please allow your location.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Please allow your location.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
 				LD_RUNPATH_SEARCH_PATHS = (
